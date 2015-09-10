@@ -6,20 +6,20 @@ import rethinkdb.proto;
 class Connection {
   private string hostname;
   private ushort port;
-  private TcpSocket socket;
+  private Socket socket;
   private Stream stream;
+  private uint queryToken;
 
   this(string hostname, ushort port) {
     this.hostname = hostname;
     this.port = port;
+    this.queryToken = 0;
   }
 
   bool connect() {
     this.socket = new TcpSocket(AddressFamily.INET);
     auto inet = new InternetAddress(to!(char[])(this.hostname), this.port);
     this.socket.connect(inet);
-    scope(exit) this.socket.close();
-
     this.stream = new SocketStream(this.socket);
 
     return this.performHanshake();
@@ -35,8 +35,38 @@ class Connection {
     return to!string(response);
   }
 
-  void write(uint value) {
+  string readQueryResponse() {
+    ulong token;
+    uint length;
+    char[] buffer;
+
+    this.stream.read(token);
+    this.stream.read(length);
+
+    buffer = this.stream.readString(length);
+    return to!string(buffer);
+  }
+
+  void writeQuery(string queryString) {
+    auto token = this.getQueryToken();
+    auto length = queryString.length;
+    auto query = to!(char[])(queryString);
+
+    this.write(token);
+    this.write(to!uint(length));
+    this.write(query);
+  }
+
+  void write(int value) {
     this.stream.write(value);
+  }
+
+  void write(ulong value) {
+    this.stream.write(value);
+  }
+
+  void write(char[] value) {
+    this.stream.writeString(value);
   }
 
   private bool performHanshake() {
@@ -50,5 +80,9 @@ class Connection {
       return true;
     else
       return false;
+  }
+
+  private ulong getQueryToken() {
+    return ++this.queryToken;
   }
 }
