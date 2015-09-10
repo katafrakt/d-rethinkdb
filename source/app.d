@@ -1,10 +1,10 @@
-import rethinkdb.connection;
+import rethinkdb.rethinkdb;
 import std.stdio;
 
 void main()
 {
-	auto conn = new Connection();
-	if(conn.connect()) {
+	auto rdb = new RethinkDB();
+	if(rdb.is_connected) {
 		writeln("SUCCESS");
 	} else {
 		writeln("NOPE");
