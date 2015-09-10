@@ -4,8 +4,10 @@ import std.stdio, std.socket, std.socketstream, std.stream, std.string, std.conv
 import rethinkdb.proto;
 
 class Connection {
-  string hostname;
-  ushort port;
+  private string hostname;
+  private ushort port;
+  private TcpSocket socket;
+  private Stream stream;
 
   this(string hostname, ushort port) {
     this.hostname = hostname;
@@ -13,24 +15,38 @@ class Connection {
   }
 
   bool connect() {
-    auto socket = new TcpSocket(AddressFamily.INET);
+    this.socket = new TcpSocket(AddressFamily.INET);
     auto inet = new InternetAddress(to!(char[])(this.hostname), this.port);
-    socket.connect(inet);
-    scope(exit) socket.close();
+    this.socket.connect(inet);
+    scope(exit) this.socket.close();
 
-    Stream ss = new SocketStream(socket);
+    this.stream = new SocketStream(this.socket);
 
+    return this.performHanshake();
+  }
+
+  string read() {
+    char[1024] buffer;
+    auto received = this.socket.receive(buffer);
+
+    // substracting 1 from received because last characted should be null
+    auto response = buffer[0..received-1];
+
+    return to!string(response);
+  }
+
+  void write(uint value) {
+    this.stream.write(value);
+  }
+
+  private bool performHanshake() {
     VersionDummy vdm;
 
-    ss.write(cast(uint) vdm.Version.V0_4);
-    ss.write(cast(uint) 0);
-    ss.write(cast(uint) vdm.Protocol.JSON);
+    this.write(cast(uint) vdm.Version.V0_4);
+    this.write(cast(uint) 0);
+    this.write(cast(uint) vdm.Protocol.JSON);
 
-
-    char[1024] buffer;
-    socket.receive(buffer);
-
-    if(to!string(buffer[0..7]) == "SUCCESS")
+    if(this.read() == "SUCCESS")
       return true;
     else
       return false;
