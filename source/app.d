@@ -10,9 +10,6 @@ void main()
 		writeln("NOPE");
 	}
 
-	for(int i = 0; i < 20; i++) {
-		auto query = "[1, \"foo" ~ to!string(i) ~ "\", {}]";
-		rdb.connection.writeQuery(query);
-		writeln(rdb.connection.readQueryResponse());
-	}
+	auto response = rdb.expr("foo").run();
+	writeln(response);
 }
