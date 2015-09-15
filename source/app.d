@@ -12,4 +12,13 @@ void main()
 
 	auto response = rdb.expr("foo").run();
 	writeln(response);
+	string[string] filter_opts;
+	filter_opts["name"] = "Michel";
+	auto term = rdb.db("blog").table("users").filter(filter_opts);
+	writeln(term.serialize());
+	writeln(term.run());
+
+	term = rdb.db("blog").table("users").filter(`{"name": "Michel"}`);
+	writeln(term.serialize());
+	writeln(term.run());
 }

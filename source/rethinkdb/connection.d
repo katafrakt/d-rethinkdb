@@ -70,7 +70,7 @@ class Connection {
   }
 
   private bool performHanshake() {
-    VersionDummy vdm;
+    Proto.VersionDummy vdm;
 
     this.write(cast(uint) vdm.Version.V0_4);
     this.write(cast(uint) 0);
