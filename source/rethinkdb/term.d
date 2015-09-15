@@ -1,16 +1,16 @@
 module rethinkdb.term;
-import rethinkdb.rethinkdb, rethinkdb.connection;
+import rethinkdb.rethinkdb, rethinkdb.connection, rethinkdb.query;
 
 class Term {
   private RethinkDB driver;
-  private string current_query;
+  private Query current_query;
 
   this(RethinkDB driver) {
     this.driver = driver;
   }
 
   Term expr(string expression) {
-    this.current_query = "[1, \"" ~ expression ~ "\", {}]";
+    this.current_query = new Query(1, expression);
     return this;
   }
 
@@ -19,7 +19,7 @@ class Term {
   }
 
   string run(Connection connection) {
-    connection.writeQuery(this.current_query);
+    connection.writeQuery(this.current_query.serialize());
     return connection.readQueryResponse();
   }
 }
