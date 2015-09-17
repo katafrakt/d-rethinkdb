@@ -30,23 +30,36 @@ class Term {
     return this;
   }
 
-  Term db(string name) {
+  // Trying to be smart here.
+  // As arguments to pretty much any of queries can be either string or a hash
+  // we define a convenience method here. The naming convention for actual expressions
+  // is with underscore and opDispatch takes care of converting associative arrays
+  // into a string, which is passed as an argument to actual method.
+  // This behaviour can be of course superseded by defining a method without underscore
+  // opDispatch won't catch it in that case, but you are on your own with implementing
+  // support for both types of argument (if allowed).
+  auto opDispatch(string s)(string args) {
+    return mixin("this._" ~ s ~ "(args)");
+  }
+
+  auto opDispatch(string s)(string[string] args) {
+    string serialized_args = args.toJSONString(PrettyJson.no);
+    return mixin("this._" ~ s ~ "(serialized_args)");
+  }
+
+  Term _db(string name) {
     this.current_query = new Query(Proto.Term.TermType.DB, null, name);
     return this;
   }
 
-  Term table(string name) {
+  Term _table(string name) {
     this.current_query = new Query(Proto.Term.TermType.TABLE, this.current_query, name);
     return this;
   }
 
-  Term filter(string args) {
+  Term _filter(string args) {
     this.current_query = new Query(Proto.Term.TermType.FILTER, this.current_query, args);
     return this;
-  }
-
-  Term filter(string[string] options) {
-    return this.filter(options.toJSONString(PrettyJson.no));
   }
 
   private void clearCurrentQuery() {
