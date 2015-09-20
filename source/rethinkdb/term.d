@@ -48,37 +48,37 @@ class Term {
   }
 
   Term _db(string name) {
-    this.setQuery(new Query(Proto.Term.TermType.DB, null, name));
+    this.setQuery(Proto.Term.TermType.DB, name);
     return this;
   }
 
   Term _db_create(string name) {
-    this.setQuery(new Query(Proto.Term.TermType.DB_CREATE, null, name));
+    this.setQuery(Proto.Term.TermType.DB_CREATE, name);
     return this;
   }
 
   Term _db_drop(string name) {
-    this.setQuery(new Query(Proto.Term.TermType.DB_DROP, null, name));
+    this.setQuery(Proto.Term.TermType.DB_DROP, name);
     return this;
   }
 
   Term _table(string name) {
-    this.setQuery(new Query(Proto.Term.TermType.TABLE, this.current_query, name));
+    this.setQuery(Proto.Term.TermType.TABLE, name);
     return this;
   }
 
   Term _table_create(string name) {
-    this.setQuery(new Query(Proto.Term.TermType.TABLE_CREATE, this.current_query, name));
+    this.setQuery(Proto.Term.TermType.TABLE_CREATE, name);
     return this;
   }
 
   Term _table_drop(string name) {
-    this.setQuery(new Query(Proto.Term.TermType.TABLE_DROP, this.current_query, name));
+    this.setQuery(Proto.Term.TermType.TABLE_DROP, name);
     return this;
   }
 
   Term _filter(string args) {
-    this.setQuery(new Query(Proto.Term.TermType.FILTER, this.current_query, args));
+    this.setQuery(Proto.Term.TermType.FILTER, args);
     return this;
   }
 
@@ -90,7 +90,8 @@ class Term {
     return "[1, " ~ this.current_query.serialize() ~ "]";
   }
 
-  private void setQuery(Query query) {
+  private void setQuery(int query_type, string args) {
+    auto query = new Query(query_type, this.current_query, args);
     this.current_query = query;
   }
 }
