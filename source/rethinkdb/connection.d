@@ -1,7 +1,7 @@
 module rethinkdb.connection;
 
 import std.stdio, std.socket, std.socketstream, std.stream, std.string, std.conv;
-import rethinkdb.proto;
+import rethinkdb.proto, rethinkdb.response;
 
 class Connection {
   private string hostname;
@@ -31,7 +31,6 @@ class Connection {
 
     // substracting 1 from received because last characted should be null
     auto response = buffer[0..received-1];
-
     return to!string(response);
   }
 
@@ -44,7 +43,10 @@ class Connection {
     this.stream.read(length);
 
     buffer = this.stream.readString(length);
-    return to!string(buffer);
+    auto buffer_string = to!string(buffer);
+
+    auto response = new Response(to!string(buffer_string));
+    return response.parse().toString();
   }
 
   void writeQuery(string queryString) {

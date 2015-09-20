@@ -18,6 +18,7 @@ void main()
 
 	writeln(rdb.db_create(db).run());
 	writeln(rdb.db(db).table_create(table).run());
+	writeln(rdb.db(db).table_create(table).run()); // should return that it already exists
 
 	string[string] filter_opts;
 	filter_opts["name"] = "Michel";
