@@ -10,15 +10,26 @@ void main()
 		writeln("NOPE");
 	}
 
+	auto db = "dtest";
+	auto table = "dtable";
+
 	auto response = rdb.expr("foo").run();
 	writeln(response);
+
+	writeln(rdb.db_create(db).run());
+	writeln(rdb.db(db).table_create(table).run());
+
 	string[string] filter_opts;
 	filter_opts["name"] = "Michel";
-	auto term = rdb.db("blog").table("users").filter(filter_opts);
+	auto term = rdb.db(db).table(table).filter(filter_opts);
 	writeln(term.serialize());
 	writeln(term.run());
 
-	term = rdb.db("blog").table("users").filter(`{"name": "Michel"}`);
+	term = rdb.db(db).table(table).filter(`{"name": "Michel"}`);
 	writeln(term.serialize());
 	writeln(term.run());
+
+
+	writeln(rdb.db(db).table_drop(table).run());
+	writeln(rdb.db_drop(db).run());
 }

@@ -48,17 +48,37 @@ class Term {
   }
 
   Term _db(string name) {
-    this.current_query = new Query(Proto.Term.TermType.DB, null, name);
+    this.setQuery(new Query(Proto.Term.TermType.DB, null, name));
+    return this;
+  }
+
+  Term _db_create(string name) {
+    this.setQuery(new Query(Proto.Term.TermType.DB_CREATE, null, name));
+    return this;
+  }
+
+  Term _db_drop(string name) {
+    this.setQuery(new Query(Proto.Term.TermType.DB_DROP, null, name));
     return this;
   }
 
   Term _table(string name) {
-    this.current_query = new Query(Proto.Term.TermType.TABLE, this.current_query, name);
+    this.setQuery(new Query(Proto.Term.TermType.TABLE, this.current_query, name));
+    return this;
+  }
+
+  Term _table_create(string name) {
+    this.setQuery(new Query(Proto.Term.TermType.TABLE_CREATE, this.current_query, name));
+    return this;
+  }
+
+  Term _table_drop(string name) {
+    this.setQuery(new Query(Proto.Term.TermType.TABLE_DROP, this.current_query, name));
     return this;
   }
 
   Term _filter(string args) {
-    this.current_query = new Query(Proto.Term.TermType.FILTER, this.current_query, args);
+    this.setQuery(new Query(Proto.Term.TermType.FILTER, this.current_query, args));
     return this;
   }
 
@@ -68,5 +88,9 @@ class Term {
 
   private string createRealQuery() {
     return "[1, " ~ this.current_query.serialize() ~ "]";
+  }
+
+  private void setQuery(Query query) {
+    this.current_query = query;
   }
 }
