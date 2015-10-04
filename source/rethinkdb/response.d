@@ -1,36 +1,41 @@
 module rethinkdb.response;
 import std.json, std.conv;
+import rethinkdb.proto, rethinkdb.datum;
 
 class Response {
-  private string string_response;
-  JSONValue value;
-  int status;
-
-
-  this(string response) {
-    this.string_response = response;
+  private {
+    Proto.Response proto_response;
+    Datum _response;
   }
 
-  Response parse() {
-    this._parse();
-    return this;
+  this(Proto.Response response) {
+    this.proto_response = response;
+  }
+
+  bool isSuccess() {
+    auto type = this.proto_response.type;
+    if(type == Proto.Response.ResponseType.SUCCESS_ATOM ||
+      type == Proto.Response.ResponseType.SUCCESS_SEQUENCE ||
+      type == Proto.Response.ResponseType.SUCCESS_PARTIAL ||
+      type == Proto.Response.ResponseType.WAIT_COMPLETE
+      ) {
+        return true;
+      } else {
+        return false;
+      }
+  }
+
+  string stringValue() {
+    return new Datum(this.proto_response.response[0]).stringValue();
+  }
+
+  ulong token() {
+    return to!ulong(this.proto_response.token);
   }
 
   override string toString() {
-    if(this.value.array().length == 0)
-      return null; // empty string? null? something smarter?
-
-    auto type = this.value[0].type();
-    if(type == JSON_TYPE.STRING) {
-      return this.value[0].str;
-    } else {
-      return toJSON(&this.value);
-    }
-  }
-
-  private void _parse() {
-    JSONValue j = parseJSON(this.string_response);
-    this.status = to!int(j["t"].integer);
-    this.value = j["r"];
+    Proto.Datum response_datum = this.proto_response.response[0];
+    Datum value = new Datum(response_datum);
+    return value.inspect();
   }
 }

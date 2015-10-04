@@ -13,8 +13,9 @@ void main()
 	auto db = "dtest";
 	auto table = "dtable";
 
-	auto response = rdb.expr("fd fds dfs foo").run();
-	writeln(response);
+	auto le_string = "fd fds dfs foo";
+	auto response = rdb.expr(le_string).run();
+	assert(response.stringValue() == le_string);
 
 	writeln(rdb.db_create(db).run());
 	writeln(rdb.db(db).table_create(table).run());

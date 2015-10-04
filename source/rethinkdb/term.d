@@ -1,6 +1,6 @@
 module rethinkdb.term;
 import rethinkdb.rethinkdb, rethinkdb.connection, rethinkdb.query;
-import rethinkdb.proto, rethinkdb.datum;
+import rethinkdb.proto, rethinkdb.datum, rethinkdb.response;
 import jsonizer.tojson, std.stdio;
 
 class Term {
@@ -13,11 +13,11 @@ class Term {
     this.shall_clear_term = false;
   }
 
-  string run() {
+  Response run() {
     return this.run(this.driver.connection);
   }
 
-  string run(Connection connection) {
+  Response run(Connection connection) {
     connection.writeQuery(this.current_term);
     this.clearCurrentQuery();
     return connection.readQueryResponse();

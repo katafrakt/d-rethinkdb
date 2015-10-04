@@ -34,7 +34,7 @@ class Connection {
     return to!string(response);
   }
 
-  string readQueryResponse() {
+  Response readQueryResponse() {
     ulong token;
     uint length;
     ubyte[] buffer;
@@ -45,7 +45,7 @@ class Connection {
     this.stream.read(buffer);
 
     auto response = new Proto.Response(buffer);
-    return response.toJson();
+    return new Response(*response);
   }
 
   void writeQuery(Proto.Term term) {
