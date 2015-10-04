@@ -25,7 +25,7 @@ class Connection {
     return this.performHanshake();
   }
 
-  string read() {
+  string readRaw() {
     char[1024] buffer;
     auto received = this.socket.receive(buffer);
 
@@ -37,38 +37,37 @@ class Connection {
   string readQueryResponse() {
     ulong token;
     uint length;
-    char[] buffer;
+    ubyte[] buffer;
 
-    this.stream.read(token);
     this.stream.read(length);
+    buffer.length = length;
 
-    buffer = this.stream.readString(length);
-    auto buffer_string = to!string(buffer);
+    this.stream.read(buffer);
 
-    auto response = new Response(to!string(buffer_string));
-    return response.parse().toString();
+    auto response = new Proto.Response(buffer);
+    return response.toJson();
   }
 
-  void writeQuery(string queryString) {
-    auto token = this.getQueryToken();
-    auto length = queryString.length;
-    auto query = to!(char[])(queryString);
+  void writeQuery(Proto.Term term) {
+    auto query = new Proto.Query();
+    query.type = Proto.Query.QueryType.START;
+    query.token = this.getQueryToken();
+    query.query = term;
 
-    this.write(token);
-    this.write(to!uint(length));
-    this.write(query);
+    auto serialized_query = query.serialize();
+
+    this.write(cast(uint)(serialized_query.length));
+    this.write(serialized_query);
   }
 
   void write(int value) {
     this.stream.write(value);
   }
 
-  void write(ulong value) {
-    this.stream.write(value);
-  }
-
-  void write(char[] value) {
-    this.stream.writeString(value);
+  void write(ubyte[] value) {
+    foreach(bt; value) {
+      this.stream.write(bt);
+    }
   }
 
   private bool performHanshake() {
@@ -76,9 +75,9 @@ class Connection {
 
     this.write(cast(uint) vdm.Version.V0_4);
     this.write(cast(uint) 0);
-    this.write(cast(uint) vdm.Protocol.JSON);
+    this.write(cast(uint) vdm.Protocol.PROTOBUF);
 
-    if(this.read() == "SUCCESS")
+    if(this.readRaw() == "SUCCESS")
       return true;
     else
       return false;

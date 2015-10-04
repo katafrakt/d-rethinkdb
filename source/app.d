@@ -13,7 +13,7 @@ void main()
 	auto db = "dtest";
 	auto table = "dtable";
 
-	auto response = rdb.expr("foo").run();
+	auto response = rdb.expr("fd fds dfs foo").run();
 	writeln(response);
 
 	writeln(rdb.db_create(db).run());
@@ -22,13 +22,13 @@ void main()
 
 	string[string] filter_opts;
 	filter_opts["name"] = "Michel";
-	auto term = rdb.db(db).table(table).filter(filter_opts);
-	writeln(term.serialize());
-	writeln(term.run());
+	/*auto term = rdb.db(db).table(table).filter(filter_opts);*/
+	/*writeln(term.serialize());*/
+	/*writeln(term.run());*/
 
-	term = rdb.db(db).table(table).filter(`{"name": "Michel"}`);
-	writeln(term.serialize());
-	writeln(term.run());
+	/*term = rdb.db(db).table(table).filter(`{"name": "Michel"}`);*/
+	/*writeln(term.serialize());*/
+	/*writeln(term.run());*/
 
 
 	writeln(rdb.db(db).table_drop(table).run());
