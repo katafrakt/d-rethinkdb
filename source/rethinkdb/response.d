@@ -29,6 +29,10 @@ class Response {
     return new Datum(this.proto_response.response[0]).stringValue();
   }
 
+  Datum[string] objValue() {
+    return new Datum(this.proto_response.response[0]).objValue();
+  }
+
   ulong token() {
     return to!ulong(this.proto_response.token);
   }

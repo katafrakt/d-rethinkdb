@@ -4,22 +4,30 @@ import std.stdio, std.conv;
 void main()
 {
 	auto rdb = new RethinkDB();
-	if(rdb.is_connected) {
-		writeln("SUCCESS");
-	} else {
-		writeln("NOPE");
-	}
+	assert(rdb.is_connected);
 
 	auto db = "dtest";
 	auto table = "dtable";
 
 	auto le_string = "fd fds dfs foo";
 	auto response = rdb.expr(le_string).run();
+
+	assert(response.isSuccess());
 	assert(response.stringValue() == le_string);
 
-	writeln(rdb.db_create(db).run());
-	writeln(rdb.db(db).table_create(table).run());
-	writeln(rdb.db(db).table_create(table).run()); // should return that it already exists
+	response = rdb.db_create(db).run();
+
+	assert(response.isSuccess());
+	assert(response.objValue()["dbs_created"].numValue() == 1);
+
+	response = rdb.db(db).table_create(table).run();
+
+	assert(response.isSuccess());
+	assert(response.objValue()["tables_created"].numValue() == 1);
+
+	response = rdb.db(db).table_create(table).run();
+
+	assert(!response.isSuccess());
 
 	string[string] filter_opts;
 	filter_opts["name"] = "Michel";
