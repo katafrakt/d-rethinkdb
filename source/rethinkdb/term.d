@@ -1,32 +1,43 @@
 module rethinkdb.term;
 import rethinkdb.rethinkdb, rethinkdb.connection, rethinkdb.query;
-import rethinkdb.proto;
-import jsonizer.tojson;
+import rethinkdb.proto, rethinkdb.datum, rethinkdb.response;
+import jsonizer.tojson, std.stdio;
 
 class Term {
   private RethinkDB driver;
-  private Query current_query;
+  private Proto.Term current_term;
+  private bool shall_clear_term;
 
   this(RethinkDB driver) {
     this.driver = driver;
+    this.shall_clear_term = false;
   }
 
-  string run() {
+  Response run() {
     return this.run(this.driver.connection);
   }
 
-  string run(Connection connection) {
-    connection.writeQuery(this.createRealQuery());
+  Response run(Connection connection) {
+    connection.writeQuery(this.current_term);
     this.clearCurrentQuery();
     return connection.readQueryResponse();
   }
 
-  string serialize() {
+  /*string serialize() {
     return this.current_query.serialize();
-  }
+  }*/
 
   Term expr(string expression) {
-    this.current_query = new SimpleQuery(expression);
+    auto term = new Proto.Term();
+    term.type = Proto.Term.TermType.DATUM;
+
+    // possibly simplify? (call datum right away)
+    auto datum = new Proto.Datum();
+    datum.type = Proto.Datum.DatumType.R_STR;
+    datum.r_str = expression;
+
+    term.datum = *datum;
+    this.current_term = *term; // why asterisk?
     return this;
   }
 
@@ -48,50 +59,68 @@ class Term {
   }
 
   Term _db(string name) {
-    this.setQuery(Proto.Term.TermType.DB, name);
+    auto arg = Datum.build(name);
+    this.setQuery(Proto.Term.TermType.DB, arg);
     return this;
   }
 
   Term _db_create(string name) {
-    this.setQuery(Proto.Term.TermType.DB_CREATE, name);
+    auto arg = Datum.build(name);
+    this.setQuery(Proto.Term.TermType.DB_CREATE, arg);
     return this;
   }
 
   Term _db_drop(string name) {
-    this.setQuery(Proto.Term.TermType.DB_DROP, name);
+    auto arg = Datum.build(name);
+    this.setQuery(Proto.Term.TermType.DB_DROP, arg);
     return this;
   }
 
   Term _table(string name) {
-    this.setQuery(Proto.Term.TermType.TABLE, name);
+    auto arg = Datum.build(name);
+    this.setQuery(Proto.Term.TermType.TABLE, arg);
     return this;
   }
 
   Term _table_create(string name) {
-    this.setQuery(Proto.Term.TermType.TABLE_CREATE, name);
+    auto arg = Datum.build(name);
+    this.setQuery(Proto.Term.TermType.TABLE_CREATE, arg);
     return this;
   }
 
   Term _table_drop(string name) {
-    this.setQuery(Proto.Term.TermType.TABLE_DROP, name);
+    auto arg = Datum.build(name);
+    this.setQuery(Proto.Term.TermType.TABLE_DROP, arg);
     return this;
   }
 
-  Term _filter(string args) {
+  /*Term _filter(string args) {
     this.setQuery(Proto.Term.TermType.FILTER, args);
     return this;
-  }
+  }*/
 
   private void clearCurrentQuery() {
-    this.current_query = null;
+    this.shall_clear_term = true;
   }
 
-  private string createRealQuery() {
-    return "[1, " ~ this.current_query.serialize() ~ "]";
+  private void setQuery(Proto.Term.TermType term_type, Proto.Datum arg) {
+    auto term = new Proto.Term();
+    term.type = Proto.Term.TermType.DATUM;
+    term.datum = arg;
+    this.setQuery(term_type, [*term]);
   }
 
-  private void setQuery(int query_type, string args) {
-    auto query = new Query(query_type, this.current_query, args);
-    this.current_query = query;
+  private void setQuery(Proto.Term.TermType term_type, Proto.Term[] args) {
+    auto term = new Proto.Term();
+    term.type = term_type;
+    if(this.shall_clear_term) {
+      this.shall_clear_term = false;
+    } else if(this.current_term.type.exists()) {
+      term.args ~= this.current_term;
+    }
+
+    term.args ~= args;
+
+    this.current_term = *term;
   }
 }
