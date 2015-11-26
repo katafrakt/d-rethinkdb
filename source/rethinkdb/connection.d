@@ -39,10 +39,12 @@ class Connection {
     uint length;
     ubyte[] buffer;
 
+    this.stream.read(token);
     this.stream.read(length);
     buffer.length = length;
 
     this.stream.read(buffer);
+    string response2 = (cast(immutable(char)*)buffer)[0..buffer.length-1];
 
     auto response = new Proto.Response(buffer);
     return new Response(*response);
@@ -56,6 +58,7 @@ class Connection {
 
     auto serialized_query = query.serialize();
 
+    this.stream.write(query.token);
     this.write(cast(uint)(serialized_query.length));
     this.write(serialized_query);
   }
@@ -75,7 +78,7 @@ class Connection {
 
     this.write(cast(uint) vdm.Version.V0_4);
     this.write(cast(uint) 0);
-    this.write(cast(uint) vdm.Protocol.PROTOBUF);
+    this.write(cast(uint) vdm.Protocol.JSON);
 
     if(this.readRaw() == "SUCCESS")
       return true;
