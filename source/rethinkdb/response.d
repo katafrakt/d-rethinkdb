@@ -1,6 +1,6 @@
 module rethinkdb.response;
 import std.json, std.conv;
-import rethinkdb.proto, rethinkdb.datum;
+import rethinkdb.proto;
 
 class Response {
   private {

@@ -1,6 +1,6 @@
 module rethinkdb.term;
 import rethinkdb.rethinkdb, rethinkdb.connection, rethinkdb.query;
-import rethinkdb.proto, rethinkdb.datum, rethinkdb.response;
+import rethinkdb.proto, rethinkdb.response;
 import std.stdio;
 
 class Term {
