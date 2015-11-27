@@ -1,12 +1,13 @@
 module rethinkdb.term;
 import rethinkdb.rethinkdb, rethinkdb.connection, rethinkdb.query;
 import rethinkdb.proto, rethinkdb.datum, rethinkdb.response;
-import jsonizer.tojson, std.stdio;
+import std.stdio;
 
 class Term {
   private RethinkDB driver;
   private Proto.Term current_term;
   private bool shall_clear_term;
+  private string str_value;
 
   this(RethinkDB driver) {
     this.driver = driver;
@@ -18,7 +19,7 @@ class Term {
   }
 
   Response run(Connection connection) {
-    connection.writeQuery(this.current_term);
+    connection.writeQuery(this.value());
     this.clearCurrentQuery();
     return connection.readQueryResponse();
   }
@@ -27,17 +28,12 @@ class Term {
     return this.current_query.serialize();
   }*/
 
+  string value() {
+    return this.str_value;
+  }
+
   Term expr(string expression) {
-    auto term = new Proto.Term();
-    term.type = Proto.Term.TermType.DATUM;
-
-    // possibly simplify? (call datum right away)
-    auto datum = new Proto.Datum();
-    datum.type = Proto.Datum.DatumType.R_STR;
-    datum.r_str = expression;
-
-    term.datum = *datum;
-    this.current_term = *term; // why asterisk?
+    this.str_value = expression;
     return this;
   }
 
@@ -59,38 +55,32 @@ class Term {
   }
 
   Term _db(string name) {
-    auto arg = Datum.build(name);
-    this.setQuery(Proto.Term.TermType.DB, arg);
+    this.setQuery(Proto.Term.TermType.DB, name);
     return this;
   }
 
   Term _db_create(string name) {
-    auto arg = Datum.build(name);
-    this.setQuery(Proto.Term.TermType.DB_CREATE, arg);
+    this.setQuery(Proto.Term.TermType.DB_CREATE, name);
     return this;
   }
 
   Term _db_drop(string name) {
-    auto arg = Datum.build(name);
-    this.setQuery(Proto.Term.TermType.DB_DROP, arg);
+    this.setQuery(Proto.Term.TermType.DB_DROP, name);
     return this;
   }
 
   Term _table(string name) {
-    auto arg = Datum.build(name);
-    this.setQuery(Proto.Term.TermType.TABLE, arg);
+    this.setQuery(Proto.Term.TermType.TABLE, name);
     return this;
   }
 
   Term _table_create(string name) {
-    auto arg = Datum.build(name);
-    this.setQuery(Proto.Term.TermType.TABLE_CREATE, arg);
+    this.setQuery(Proto.Term.TermType.TABLE_CREATE, name);
     return this;
   }
 
   Term _table_drop(string name) {
-    auto arg = Datum.build(name);
-    this.setQuery(Proto.Term.TermType.TABLE_DROP, arg);
+    this.setQuery(Proto.Term.TermType.TABLE_DROP, name);
     return this;
   }
 
@@ -101,6 +91,16 @@ class Term {
 
   private void clearCurrentQuery() {
     this.shall_clear_term = true;
+  }
+
+  private void setQuery(Proto.Term.TermType term_type, string arg) {
+    /*if(this.shall_clear_term) {
+      this.shall_clear_term = false;
+    } else if(this.current_term.type.exists()) {
+      term.args ~= this.current_term;
+    }*/
+
+    this.str_value = arg;
   }
 
   private void setQuery(Proto.Term.TermType term_type, Proto.Datum arg) {

@@ -44,23 +44,19 @@ class Connection {
     buffer.length = length;
 
     this.stream.read(buffer);
-    string response2 = (cast(immutable(char)*)buffer)[0..buffer.length-1];
+    string response = (cast(immutable(char)*)buffer)[0..length];
 
-    auto response = new Proto.Response(buffer);
-    return new Response(*response);
+    return new Response(token, response);
   }
 
-  void writeQuery(Proto.Term term) {
-    auto query = new Proto.Query();
-    query.type = Proto.Query.QueryType.START;
-    query.token = this.getQueryToken();
-    query.query = term;
+  void writeQuery(string expression) {
+    auto token = this.getQueryToken();
 
-    auto serialized_query = query.serialize();
+    auto str = "[" ~ toChars(to!int(Proto.Query.QueryType.START)).to!string() ~ ", \"" ~ expression ~ "\", {}]";
 
-    this.stream.write(query.token);
-    this.write(cast(uint)(serialized_query.length));
-    this.write(serialized_query);
+    this.stream.write(token);
+    this.write(cast(uint)(str.length));
+    this.stream.writeString(str);
   }
 
   void write(int value) {

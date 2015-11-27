@@ -16,19 +16,17 @@ void main()
 	assert(response.stringValue() == le_string);
 
 	response = rdb.db_create(db).run();
-
 	assert(response.isSuccess());
-	assert(response.objValue()["dbs_created"].numValue() == 1);
+	assert(response.stringValue() == db);
 
 	response = rdb.db(db).table_create(table).run();
 
 	assert(response.isSuccess());
-	assert(response.objValue()["tables_created"].numValue() == 1);
+	assert(response.stringValue() == table);
 
-	response = rdb.db(db).table_create(table).run();
-
-	assert(!response.isSuccess());
-
+	/*response = rdb.db(db).table_create(table).run();
+writeln(response.stringValue());
+	assert(!response.isSuccess());*/
 	string[string] filter_opts;
 	filter_opts["name"] = "Michel";
 	/*auto term = rdb.db(db).table(table).filter(filter_opts);*/
@@ -40,6 +38,6 @@ void main()
 	/*writeln(term.run());*/
 
 
-	writeln(rdb.db(db).table_drop(table).run());
-	writeln(rdb.db_drop(db).run());
+	writeln(rdb.db(db).table_drop(table).run().stringValue());
+	writeln(rdb.db_drop(db).run().stringValue());
 }

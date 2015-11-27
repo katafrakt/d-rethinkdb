@@ -4,16 +4,17 @@ import rethinkdb.proto, rethinkdb.datum;
 
 class Response {
   private {
-    Proto.Response proto_response;
-    Datum _response;
+    JSONValue response;
+    ulong _token;
   }
 
-  this(Proto.Response response) {
-    this.proto_response = response;
+  this(ulong token, string response) {
+    this.response = parseJSON(response);
+    this._token = token;
   }
 
   bool isSuccess() {
-    auto type = this.proto_response.type;
+    auto type = this.response["t"].integer;
     if(type == Proto.Response.ResponseType.SUCCESS_ATOM ||
       type == Proto.Response.ResponseType.SUCCESS_SEQUENCE ||
       type == Proto.Response.ResponseType.SUCCESS_PARTIAL ||
@@ -26,20 +27,24 @@ class Response {
   }
 
   string stringValue() {
-    return new Datum(this.proto_response.response[0]).stringValue();
+    return this.value()[0].str();
   }
 
-  Datum[string] objValue() {
-    return new Datum(this.proto_response.response[0]).objValue();
+  JSONValue objValue() {
+    return parseJSON(this.value()[0].str());
+  }
+
+  JSONValue[] value() {
+    return this.response["r"].array();
   }
 
   ulong token() {
-    return to!ulong(this.proto_response.token);
+    return this._token;
   }
 
+
+
   override string toString() {
-    Proto.Datum response_datum = this.proto_response.response[0];
-    Datum value = new Datum(response_datum);
-    return value.inspect();
+    return this.response["r"].str();
   }
 }
