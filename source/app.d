@@ -24,18 +24,20 @@ void main()
 	assert(response.isSuccess());
 	assert(response.objValue()["tables_created"].integer == 1);
 
-	/*response = rdb.db(db).table_create(table).run();
-writeln(response.stringValue());
-	assert(!response.isSuccess());*/
+	response = rdb.db(db).table_create(table).run();
+
+	assert(!response.isSuccess());
+
+
 	string[string] filter_opts;
 	filter_opts["name"] = "Michel";
-	/*auto term = rdb.db(db).table(table).filter(filter_opts);*/
-	/*writeln(term.serialize());*/
-	/*writeln(term.run());*/
+	/*auto term = rdb.db(db).table(table).filter(filter_opts);
+	writeln(term.serialize());
+	writeln(term.run());*/
 
-	/*term = rdb.db(db).table(table).filter(`{"name": "Michel"}`);*/
-	/*writeln(term.serialize());*/
-	/*writeln(term.run());*/
+	auto term = rdb.db(db).table(table).filter(`{"name": "Michel"}`);
+	writeln(term.serialize());
+	writeln(term.run());
 
 
 	writeln(rdb.db(db).table_drop(table).run().objValue());

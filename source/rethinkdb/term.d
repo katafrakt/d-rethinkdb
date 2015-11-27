@@ -18,12 +18,12 @@ class Term {
   }
 
   Response run(Connection connection) {
-    connection.writeQuery(this.value());
+    connection.writeQuery(this.serialize());
     this.clearCurrentQuery();
     return connection.readQueryResponse();
   }
 
-  string value() {
+  string serialize() {
     return this.query.serialize();
   }
 
@@ -44,8 +44,9 @@ class Term {
     return mixin("this._" ~ s ~ "(args)");
   }
 
-  auto opDispatch(string s)(string[string] args) {
-    string serialized_args = args.toJSONString(PrettyJson.no);
+  auto opDispatch(string s, T)(T args) {
+    JSONValue json = args;
+    string serialized_args = json.toJSON();
     return mixin("this._" ~ s ~ "(serialized_args)");
   }
 
@@ -79,10 +80,10 @@ class Term {
     return this;
   }
 
-  /*Term _filter(string args) {
+  Term _filter(string args) {
     this.setQuery(Proto.Term.TermType.FILTER, args);
     return this;
-  }*/
+  }
 
   private void clearCurrentQuery() {
     this.shall_clear_term = true;

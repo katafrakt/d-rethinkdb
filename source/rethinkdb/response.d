@@ -43,6 +43,7 @@ class Response {
   }
 
   override string toString() {
-    return this.response["r"].str();
+    JSONValue response = this.response["r"];
+    return response.toString();
   }
 }
