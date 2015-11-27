@@ -39,25 +39,24 @@ class Connection {
     uint length;
     ubyte[] buffer;
 
+    this.stream.read(token);
     this.stream.read(length);
     buffer.length = length;
 
     this.stream.read(buffer);
+    string response = (cast(immutable(char)*)buffer)[0..length];
 
-    auto response = new Proto.Response(buffer);
-    return new Response(*response);
+    return new Response(token, response);
   }
 
-  void writeQuery(Proto.Term term) {
-    auto query = new Proto.Query();
-    query.type = Proto.Query.QueryType.START;
-    query.token = this.getQueryToken();
-    query.query = term;
+  void writeQuery(string expression) {
+    auto token = this.getQueryToken();
 
-    auto serialized_query = query.serialize();
+    auto str = "[" ~ toChars(to!int(Proto.Query.QueryType.START)).to!string() ~ ", \"" ~ expression ~ "\", {}]";
 
-    this.write(cast(uint)(serialized_query.length));
-    this.write(serialized_query);
+    this.stream.write(token);
+    this.write(cast(uint)(str.length));
+    this.stream.writeString(str);
   }
 
   void write(int value) {
@@ -75,7 +74,7 @@ class Connection {
 
     this.write(cast(uint) vdm.Version.V0_4);
     this.write(cast(uint) 0);
-    this.write(cast(uint) vdm.Protocol.PROTOBUF);
+    this.write(cast(uint) vdm.Protocol.JSON);
 
     if(this.readRaw() == "SUCCESS")
       return true;
