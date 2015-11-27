@@ -17,12 +17,12 @@ void main()
 
 	response = rdb.db_create(db).run();
 	assert(response.isSuccess());
-	assert(response.stringValue() == db);
+	assert(response.objValue()["dbs_created"].integer == 1);
 
 	response = rdb.db(db).table_create(table).run();
 
 	assert(response.isSuccess());
-	assert(response.stringValue() == table);
+	assert(response.objValue()["tables_created"].integer == 1);
 
 	/*response = rdb.db(db).table_create(table).run();
 writeln(response.stringValue());
@@ -38,6 +38,6 @@ writeln(response.stringValue());
 	/*writeln(term.run());*/
 
 
-	writeln(rdb.db(db).table_drop(table).run().stringValue());
-	writeln(rdb.db_drop(db).run().stringValue());
+	writeln(rdb.db(db).table_drop(table).run().objValue());
+	writeln(rdb.db_drop(db).run().objValue());
 }

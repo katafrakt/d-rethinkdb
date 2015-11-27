@@ -15,6 +15,12 @@ class Query {
     this.options = options;
   }
 
+  this(int query_type, string argument, string options = null) {
+    this.query_type = query_type;
+    this.argument = argument;
+    this.options = options;
+  }
+
   string serialize() {
     string arguments;
     if(wrapped_query is null) {

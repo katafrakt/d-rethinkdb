@@ -31,7 +31,7 @@ class Response {
   }
 
   JSONValue objValue() {
-    return parseJSON(this.value()[0].str());
+    return this.value()[0];
   }
 
   JSONValue[] value() {

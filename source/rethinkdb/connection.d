@@ -52,7 +52,7 @@ class Connection {
   void writeQuery(string expression) {
     auto token = this.getQueryToken();
 
-    auto str = "[" ~ toChars(to!int(Proto.Query.QueryType.START)).to!string() ~ ", \"" ~ expression ~ "\", {}]";
+    auto str = "[" ~ toChars(to!int(Proto.Query.QueryType.START)).to!string() ~ ", " ~ expression ~ ", {}]";
 
     this.stream.write(token);
     this.write(cast(uint)(str.length));

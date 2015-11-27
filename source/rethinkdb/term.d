@@ -5,9 +5,8 @@ import std.stdio;
 
 class Term {
   private RethinkDB driver;
-  private Proto.Term current_term;
+  private Query query;
   private bool shall_clear_term;
-  private string str_value;
 
   this(RethinkDB driver) {
     this.driver = driver;
@@ -25,11 +24,11 @@ class Term {
   }
 
   string value() {
-    return this.str_value;
+    return this.query.serialize();
   }
 
   Term expr(string expression) {
-    this.str_value = expression;
+    this.query = new SimpleQuery(expression);
     return this;
   }
 
@@ -51,8 +50,7 @@ class Term {
   }
 
   Term _db(string name) {
-    auto arg = Datum.build(name);
-    this.setQuery(Proto.Term.TermType.DB, arg);
+    this.setQuery(Proto.Term.TermType.DB, name);
     return this;
   }
 
@@ -91,33 +89,16 @@ class Term {
   }
 
   private void setQuery(Proto.Term.TermType term_type, string arg) {
-    /*if(this.shall_clear_term) {
-      this.shall_clear_term = false;
-    } else if(this.current_term.type.exists()) {
-      term.args ~= this.current_term;
-    }*/
-
-    this.str_value = arg;
-  }
-
-  private void setQuery(Proto.Term.TermType term_type, Proto.Datum arg) {
-    auto term = new Proto.Term();
-    term.type = Proto.Term.TermType.DATUM;
-    term.datum = arg;
-    this.setQuery(term_type, [*term]);
-  }
-
-  private void setQuery(Proto.Term.TermType term_type, Proto.Term[] args) {
-    auto term = new Proto.Term();
-    term.type = term_type;
     if(this.shall_clear_term) {
       this.shall_clear_term = false;
-    } else if(this.current_term.type.exists()) {
-      term.args ~= this.current_term;
     }
 
-    term.args ~= args;
+    Query query;
+    if(this.query is null) {
+      this.query = new Query(term_type, arg);
+    } else {
+      this.query = new Query(term_type, this.query, arg);
+    }
 
-    this.current_term = *term;
   }
 }
