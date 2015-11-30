@@ -93,6 +93,11 @@ class Term {
     return this;
   }
 
+  Term _get(string args) {
+    this.setQuery(Proto.Term.TermType.GET, args);
+    return this;
+  }
+
   private void clearCurrentQuery() {
     this.shall_clear_term = true;
   }

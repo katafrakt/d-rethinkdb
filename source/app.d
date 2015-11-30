@@ -41,6 +41,11 @@ void main()
 
 	response = rdb.db(db).table(table).filter(`{"name": "Michel"}`).run();
 	assert(response.length == 1);
+	string uuid = response.objValue()["id"].str();
+
+	response = rdb.db(db).table(table).get(uuid).run();
+	assert(response.length == 1);
+	assert(response.objValue()["last_name"].str() == "Pfeiffer");
 
 	JSONValue res = rdb.db(db).table_drop(table).run().objValue();
 	assert(res["tables_dropped"].integer == 1);
