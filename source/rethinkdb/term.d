@@ -88,6 +88,11 @@ class Term {
     return this;
   }
 
+  Term _insert(string args) {
+    this.setQuery(Proto.Term.TermType.INSERT, args);
+    return this;
+  }
+
   private void clearCurrentQuery() {
     this.shall_clear_term = true;
   }

@@ -15,6 +15,8 @@ void main()
 	assert(response.isSuccess());
 	assert(response.stringValue() == le_string);
 
+	rdb.db_drop(db).run(); // control, if previous test run went wrong
+
 	response = rdb.db_create(db).run();
 	assert(response.isSuccess());
 	assert(response.objValue()["dbs_created"].integer == 1);
@@ -31,15 +33,14 @@ void main()
 
 	string[string] filter_opts;
 	filter_opts["name"] = "Michel";
-	
-	auto term = rdb.db(db).table(table).filter(filter_opts);
-	writeln(term.serialize());
-	writeln(term.run());
 
-	term = rdb.db(db).table(table).filter(`{"name": "Michel"}`);
-	writeln(term.serialize());
-	writeln(term.run());
+	response = rdb.db(db).table(table).filter(filter_opts).run();
+	assert(response.length == 0);
 
+	response = rdb.db(db).table(table).insert(`{"name": "Michel", "last_name": "Pfeiffer"}`).run();
+
+	response = rdb.db(db).table(table).filter(`{"name": "Michel"}`).run();
+	assert(response.length == 1);
 
 	writeln(rdb.db(db).table_drop(table).run().objValue());
 	writeln(rdb.db_drop(db).run().objValue());

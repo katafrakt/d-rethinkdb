@@ -42,6 +42,11 @@ class Response {
     return this._token;
   }
 
+  @property
+  ulong length() {
+    return value().length;
+  }
+
   override string toString() {
     JSONValue response = this.response["r"];
     return response.toString();
