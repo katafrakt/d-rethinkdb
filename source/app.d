@@ -1,5 +1,5 @@
 import rethinkdb.rethinkdb;
-import std.stdio, std.conv;
+import std.stdio, std.conv, std.json;
 
 void main()
 {
@@ -42,6 +42,9 @@ void main()
 	response = rdb.db(db).table(table).filter(`{"name": "Michel"}`).run();
 	assert(response.length == 1);
 
-	writeln(rdb.db(db).table_drop(table).run().objValue());
-	writeln(rdb.db_drop(db).run().objValue());
+	JSONValue res = rdb.db(db).table_drop(table).run().objValue();
+	assert(res["tables_dropped"].integer == 1);
+
+	res = rdb.db_drop(db).run().objValue();
+	assert(res["dbs_dropped"].integer == 1);
 }
