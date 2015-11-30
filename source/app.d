@@ -31,11 +31,12 @@ void main()
 
 	string[string] filter_opts;
 	filter_opts["name"] = "Michel";
-	/*auto term = rdb.db(db).table(table).filter(filter_opts);
+	
+	auto term = rdb.db(db).table(table).filter(filter_opts);
 	writeln(term.serialize());
-	writeln(term.run());*/
+	writeln(term.run());
 
-	auto term = rdb.db(db).table(table).filter(`{"name": "Michel"}`);
+	term = rdb.db(db).table(table).filter(`{"name": "Michel"}`);
 	writeln(term.serialize());
 	writeln(term.run());
 

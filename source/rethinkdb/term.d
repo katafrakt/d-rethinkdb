@@ -1,7 +1,7 @@
 module rethinkdb.term;
 import rethinkdb.rethinkdb, rethinkdb.connection, rethinkdb.query;
 import rethinkdb.proto, rethinkdb.response;
-import std.stdio;
+import std.stdio, std.json, std.traits;
 
 class Term {
   private RethinkDB driver;
@@ -40,14 +40,17 @@ class Term {
   // This behaviour can be of course superseded by defining a method without underscore
   // opDispatch won't catch it in that case, but you are on your own with implementing
   // support for both types of argument (if allowed).
-  auto opDispatch(string s)(string args) {
-    return mixin("this._" ~ s ~ "(args)");
-  }
-
   auto opDispatch(string s, T)(T args) {
-    JSONValue json = args;
-    string serialized_args = json.toJSON();
-    return mixin("this._" ~ s ~ "(serialized_args)");
+    string str;
+
+    static if(__traits(isAssociativeArray, T)) {
+      JSONValue json = args;
+      str = json.toString();
+    } else {
+      str = args;
+    }
+
+    return mixin("this._" ~ s ~ "(str)");
   }
 
   Term _db(string name) {
