@@ -26,6 +26,10 @@ class Response {
       }
   }
 
+  JSONValue opIndex(string key) {
+    return this.objValue()[key];
+  }
+
   string stringValue() {
     return this.value()[0].str();
   }

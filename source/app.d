@@ -1,4 +1,4 @@
-import rethinkdb.rethinkdb;
+import rethinkdb.rethinkdb, rethinkdb.response;
 import std.stdio, std.conv, std.json;
 
 void main()
@@ -19,12 +19,12 @@ void main()
 
 	response = rdb.db_create(db).run();
 	assert(response.isSuccess());
-	assert(response.objValue()["dbs_created"].integer == 1);
+	assert(response["dbs_created"].integer == 1);
 
 	response = rdb.db(db).table_create(table).run();
 
 	assert(response.isSuccess());
-	assert(response.objValue()["tables_created"].integer == 1);
+	assert(response["tables_created"].integer == 1);
 
 	response = rdb.db(db).table_create(table).run();
 
@@ -41,15 +41,15 @@ void main()
 
 	response = rdb.db(db).table(table).filter(`{"name": "Michel"}`).run();
 	assert(response.length == 1);
-	string uuid = response.objValue()["id"].str();
+	string uuid = response["id"].str();
 
 	response = rdb.db(db).table(table).get(uuid).run();
 	assert(response.length == 1);
-	assert(response.objValue()["last_name"].str() == "Pfeiffer");
+	assert(response["last_name"].str() == "Pfeiffer");
 
-	JSONValue res = rdb.db(db).table_drop(table).run().objValue();
+	Response res = rdb.db(db).table_drop(table).run();
 	assert(res["tables_dropped"].integer == 1);
 
-	res = rdb.db_drop(db).run().objValue();
+	res = rdb.db_drop(db).run();
 	assert(res["dbs_dropped"].integer == 1);
 }
