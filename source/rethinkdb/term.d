@@ -8,6 +8,19 @@ class Term {
   private Query query;
   private bool shall_clear_term;
 
+  enum dict = [
+    "db": Proto.Term.TermType.DB,
+    "db_create": Proto.Term.TermType.DB_CREATE,
+    "db_drop": Proto.Term.TermType.DB_DROP,
+    "table": Proto.Term.TermType.TABLE,
+    "table_create": Proto.Term.TermType.TABLE_CREATE,
+    "table_drop": Proto.Term.TermType.TABLE_DROP,
+    "filter": Proto.Term.TermType.FILTER,
+    "insert": Proto.Term.TermType.INSERT,
+    "get": Proto.Term.TermType.GET
+   ];
+
+
   this(RethinkDB driver) {
     this.driver = driver;
     this.shall_clear_term = false;
@@ -50,52 +63,12 @@ class Term {
       str = args;
     }
 
-    return mixin("this._" ~ s ~ "(str)");
-  }
-
-  Term _db(string name) {
-    this.setQuery(Proto.Term.TermType.DB, name);
-    return this;
-  }
-
-  Term _db_create(string name) {
-    this.setQuery(Proto.Term.TermType.DB_CREATE, name);
-    return this;
-  }
-
-  Term _db_drop(string name) {
-    this.setQuery(Proto.Term.TermType.DB_DROP, name);
-    return this;
-  }
-
-  Term _table(string name) {
-    this.setQuery(Proto.Term.TermType.TABLE, name);
-    return this;
-  }
-
-  Term _table_create(string name) {
-    this.setQuery(Proto.Term.TermType.TABLE_CREATE, name);
-    return this;
-  }
-
-  Term _table_drop(string name) {
-    this.setQuery(Proto.Term.TermType.TABLE_DROP, name);
-    return this;
-  }
-
-  Term _filter(string args) {
-    this.setQuery(Proto.Term.TermType.FILTER, args);
-    return this;
-  }
-
-  Term _insert(string args) {
-    this.setQuery(Proto.Term.TermType.INSERT, args);
-    return this;
-  }
-
-  Term _get(string args) {
-    this.setQuery(Proto.Term.TermType.GET, args);
-    return this;
+    static if((s in dict) !is null) {
+      this.setQuery(dict[s], str);
+      return this;
+    } else {
+      return mixin("this._" ~ s ~ "(str)");
+    }
   }
 
   private void clearCurrentQuery() {
