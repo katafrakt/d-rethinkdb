@@ -40,8 +40,10 @@ class Term {
     return this.query.serialize();
   }
 
-  Term expr(string expression) {
-    this.query = new SimpleQuery(expression);
+  Term expr(T)(T expression) {
+    JSONValue jexpr = this.parseArg(expression);
+
+    this.query = new SimpleQuery(jexpr);
     return this;
   }
 
@@ -54,28 +56,26 @@ class Term {
   // opDispatch won't catch it in that case, but you are on your own with implementing
   // support for both types of argument (if allowed).
   auto opDispatch(string s, T)(T args) {
-    string str;
-
-    static if(__traits(isAssociativeArray, T)) {
-      JSONValue json = args;
-      str = json.toString();
-    } else {
-      str = args;
-    }
+    JSONValue jsv = this.parseArg(args);
 
     static if((s in dict) !is null) {
-      this.setQuery(dict[s], str);
+      this.setQuery(dict[s], jsv);
       return this;
     } else {
       return mixin("this._" ~ s ~ "(str)");
     }
   }
 
+  auto opIndex(T)(T key) {
+    this.setQuery(Proto.Term.TermType.BRACKET, JSONValue(key));
+    return this;
+  }
+
   private void clearCurrentQuery() {
     this.shall_clear_term = true;
   }
 
-  private void setQuery(Proto.Term.TermType term_type, string arg) {
+  private void setQuery(Proto.Term.TermType term_type, JSONValue arg) {
     if(this.shall_clear_term) {
       this.shall_clear_term = false;
     }
@@ -86,6 +86,14 @@ class Term {
     } else {
       this.query = new Query(term_type, this.query, arg);
     }
+  }
 
+  private JSONValue parseArg(T)(T raw_arg) {
+    JSONValue arg = raw_arg;
+    if(arg.type == JSON_TYPE.ARRAY) {
+      return JSONValue([JSONValue(Proto.Term.TermType.MAKE_ARRAY), arg]);
+    } else {
+      return arg;
+    }
   }
 }

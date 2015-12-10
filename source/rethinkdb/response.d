@@ -30,8 +30,13 @@ class Response {
     return this.objValue()[key];
   }
 
-  string stringValue() {
+  string str() {
     return this.value()[0].str();
+  }
+
+  @property
+  long integer() {
+    return this.value()[0].integer;
   }
 
   JSONValue objValue() {
