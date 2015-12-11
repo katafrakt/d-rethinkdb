@@ -30,6 +30,10 @@ class Response {
     return this.objValue()[key];
   }
 
+  JSONValue opIndex(int index) {
+    return this.value()[index];
+  }
+
   string str() {
     return this.value()[0].str();
   }

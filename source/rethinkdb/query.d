@@ -11,7 +11,7 @@ class Query {
   this(int query_type, Query query, JSONValue argument, string options = null) {
     this.query_type = query_type;
     this.wrapped_query = query;
-    this.argument = argument;
+    this.argument = argument.isNull() ? JSONValue(null) : argument;
     this.options = options;
   }
 

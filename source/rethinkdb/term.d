@@ -17,7 +17,9 @@ class Term {
     "table_drop": Proto.Term.TermType.TABLE_DROP,
     "filter": Proto.Term.TermType.FILTER,
     "insert": Proto.Term.TermType.INSERT,
-    "get": Proto.Term.TermType.GET
+    "get": Proto.Term.TermType.GET,
+    "pluck": Proto.Term.TermType.PLUCK,
+    "distinct": Proto.Term.TermType.DISTINCT
    ];
 
 
@@ -55,14 +57,18 @@ class Term {
   // This behaviour can be of course superseded by defining a method without underscore
   // opDispatch won't catch it in that case, but you are on your own with implementing
   // support for both types of argument (if allowed).
-  auto opDispatch(string s, T)(T args) {
-    JSONValue jsv = this.parseArg(args);
+  auto opDispatch(string s, T...)(T args) {
+    JSONValue jsv = null;
+
+    static if(args.length > 0) {
+      jsv = this.parseArg(args);
+    }
 
     static if((s in dict) !is null) {
       this.setQuery(dict[s], jsv);
       return this;
     } else {
-      return mixin("this._" ~ s ~ "(str)");
+      return mixin("this._" ~ s ~ "(jsv)");
     }
   }
 

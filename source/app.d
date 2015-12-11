@@ -56,6 +56,20 @@ void main()
 	response = rdb.expr([10, 20, 30, 40, 50])[3].run();
 	assert(response.integer == 40);
 
+	response = rdb.db(db).table(table).insert(parseJSON(`{"name": "Oona", "last_name": "Pfeiffer"}`)).run();
+
+	// test pluck
+	response = rdb.db(db).table(table).pluck("last_name").run();
+	assert(response.length == 2);
+	assert(response[0].object.length == 1);
+	assert(response[0]["last_name"].str() == "Pfeiffer");
+
+	// test pluck with distinct
+	response = rdb.db(db).table(table).pluck("last_name").distinct().run();
+	assert(response[0].array.length == 1);
+	assert(response[0][0].object.length == 1);
+	assert(response[0][0]["last_name"].str() == "Pfeiffer");
+
 	Response res = rdb.db(db).table_drop(table).run();
 	assert(res["tables_dropped"].integer == 1);
 
