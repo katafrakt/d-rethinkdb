@@ -41,18 +41,24 @@ class Response {
     }
   }
 
+  @property
   string str() {
-    return this.value()[0].str();
+    return this.realValue.str();
   }
 
   @property
   long integer() {
-    return this.value()[0].integer;
+    return this.realValue.integer;
   }
 
   @property
   JSONValue[] array() {
-    return this.value()[0].array;
+    return this.realValue.array;
+  }
+
+  @property
+  float floating() {
+    return this.realValue.floating;
   }
 
   JSONValue objValue() {

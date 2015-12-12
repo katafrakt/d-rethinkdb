@@ -20,7 +20,10 @@ class Term {
     "get": Proto.Term.TermType.GET,
     "pluck": Proto.Term.TermType.PLUCK,
     "distinct": Proto.Term.TermType.DISTINCT,
-    "add": Proto.Term.TermType.ADD
+    "add": Proto.Term.TermType.ADD,
+    "sub": Proto.Term.TermType.SUB,
+    "mul": Proto.Term.TermType.MUL,
+    "div": Proto.Term.TermType.DIV
    ];
 
 

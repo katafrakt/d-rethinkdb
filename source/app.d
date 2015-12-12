@@ -80,6 +80,18 @@ void main()
 	assert(response[0].integer == 1);
 	assert(response[4].integer == 23);
 
+	// sub
+	response = rdb.expr(23).sub(21).run();
+	assert(response.integer == 2);
+
+	// mul
+	response = rdb.expr(234312).mul(212323).run();
+	assert(response.integer == 49749826776);
+
+	// div
+	response = rdb.expr(3).div(6).run();
+	assert(response.floating == 0.5);
+
 	// clean up
 	Response res = rdb.db(db).table_drop(table).run();
 	assert(res["tables_dropped"].integer == 1);
