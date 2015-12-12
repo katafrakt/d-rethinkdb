@@ -31,7 +31,14 @@ class Response {
   }
 
   JSONValue opIndex(int index) {
-    return this.value()[index];
+    // hellish solution, but we don't want to respect arrays within arrays as
+    // sane results for simple values
+    auto value = this.value();
+    if(value.length == 1 && value[0].type == JSON_TYPE.ARRAY) {
+      return value[0][index];
+    } else {
+      return value[index];
+    }
   }
 
   string str() {
@@ -41,6 +48,11 @@ class Response {
   @property
   long integer() {
     return this.value()[0].integer;
+  }
+
+  @property
+  JSONValue[] array() {
+    return this.value()[0].array;
   }
 
   JSONValue objValue() {
@@ -57,11 +69,22 @@ class Response {
 
   @property
   ulong length() {
-    return value().length;
+    if(this.value().length > 0 && this.realValue.type == JSON_TYPE.ARRAY) {
+      return this.array().length;
+    } else {
+      return this.value().length;
+    }
   }
 
   override string toString() {
     JSONValue response = this.response["r"];
     return response.toString();
+  }
+
+  private {
+    @property
+    JSONValue realValue() {
+      return this.value()[0];
+    }
   }
 }

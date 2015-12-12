@@ -19,7 +19,8 @@ class Term {
     "insert": Proto.Term.TermType.INSERT,
     "get": Proto.Term.TermType.GET,
     "pluck": Proto.Term.TermType.PLUCK,
-    "distinct": Proto.Term.TermType.DISTINCT
+    "distinct": Proto.Term.TermType.DISTINCT,
+    "add": Proto.Term.TermType.ADD
    ];
 
 

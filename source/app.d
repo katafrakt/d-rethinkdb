@@ -66,10 +66,21 @@ void main()
 
 	// test pluck with distinct
 	response = rdb.db(db).table(table).pluck("last_name").distinct().run();
-	assert(response[0].array.length == 1);
-	assert(response[0][0].object.length == 1);
-	assert(response[0][0]["last_name"].str() == "Pfeiffer");
+	assert(response.length == 1);
+	assert(response[0].object.length == 1);
+	assert(response[0]["last_name"].str() == "Pfeiffer");
 
+	// add
+	response = rdb.expr(2).add(2).run();
+	assert(response.integer == 4);
+
+	// also possible to add arrays!
+	response = rdb.expr([1,2,5]).add([0,23]).run();
+	assert(response.length == 5);
+	assert(response[0].integer == 1);
+	assert(response[4].integer == 23);
+
+	// clean up
 	Response res = rdb.db(db).table_drop(table).run();
 	assert(res["tables_dropped"].integer == 1);
 
