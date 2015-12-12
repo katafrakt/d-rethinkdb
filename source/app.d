@@ -92,6 +92,11 @@ void main()
 	response = rdb.expr(3).div(6).run();
 	assert(response.floating == 0.5);
 
+	// mod
+	response = rdb.expr(5).mod(3).run();
+	assert(response.integer == 2);
+
+
 	// clean up
 	Response res = rdb.db(db).table_drop(table).run();
 	assert(res["tables_dropped"].integer == 1);

@@ -23,7 +23,8 @@ class Term {
     "add": Proto.Term.TermType.ADD,
     "sub": Proto.Term.TermType.SUB,
     "mul": Proto.Term.TermType.MUL,
-    "div": Proto.Term.TermType.DIV
+    "div": Proto.Term.TermType.DIV,
+    "mod": Proto.Term.TermType.MOD
    ];
 
 
