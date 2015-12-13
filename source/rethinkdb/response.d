@@ -61,6 +61,11 @@ class Response {
     return this.realValue.floating;
   }
 
+  @property
+  bool boolean() {
+    return this.realValue.type == JSON_TYPE.TRUE ? true : false;
+  }
+
   JSONValue objValue() {
     return this.value()[0];
   }

@@ -86,6 +86,18 @@ debug(featureTest) {
         response = rdb.expr(5).mod(3).run();
       	response.integer.shouldEqual(2);
       });
+
+      f.scenario("and", {
+        rdb.expr(true).and(true).run().boolean.shouldEqual(true);
+        rdb.expr(true).and(false).run().boolean.shouldEqual(false);
+        rdb.expr(false).and(false).run().boolean.shouldEqual(false);
+      });
+
+      f.scenario("or", {
+        rdb.expr(true).or(true).run().boolean.shouldEqual(true);
+        rdb.expr(true).or(false).run().boolean.shouldEqual(true);
+        rdb.expr(false).and(false).run().boolean.shouldEqual(false);
+      });
     }, "");
 
     feature("data operation with no data", (f) {

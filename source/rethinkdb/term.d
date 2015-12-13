@@ -25,7 +25,9 @@ class Term {
     "sub": Proto.Term.TermType.SUB,
     "mul": Proto.Term.TermType.MUL,
     "div": Proto.Term.TermType.DIV,
-    "mod": Proto.Term.TermType.MOD
+    "mod": Proto.Term.TermType.MOD,
+    "and": Proto.Term.TermType.AND,
+    "or": Proto.Term.TermType.OR
    ];
 
 
