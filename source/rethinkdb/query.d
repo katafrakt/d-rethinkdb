@@ -26,6 +26,8 @@ class Query {
     if(wrapped_query is null) {
       if(this.argument.type == JSON_TYPE.OBJECT) {
         arguments = this.argument.str();
+      } else if (this.argument.isNull()) {
+        arguments = "";
       } else {
         arguments = this.argument.toString();
       }

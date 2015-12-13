@@ -1,5 +1,5 @@
 module feature_tests;
-import std.json;
+import std.json, std.algorithm;
 import std.stdio; // for ad-hoc debugging
 
 debug(featureTest) {
@@ -20,6 +20,14 @@ debug(featureTest) {
         response["dbs_created"].integer.shouldEqual(1);
 
         rdb.db_drop(db).run();
+      });
+
+      f.scenario("db_list", {
+        rdb.db_create(db).run();
+        response = rdb.db_list().run();
+        auto ary = response.array;
+        ary.length.shouldBeGreaterThan(0);
+        ary.canFind(JSONValue(db)).shouldEqual(true);
       });
 
       f.scenario("create table", {

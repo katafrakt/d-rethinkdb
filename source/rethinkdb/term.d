@@ -12,6 +12,7 @@ class Term {
     "db": Proto.Term.TermType.DB,
     "db_create": Proto.Term.TermType.DB_CREATE,
     "db_drop": Proto.Term.TermType.DB_DROP,
+    "db_list": Proto.Term.TermType.DB_LIST,
     "table": Proto.Term.TermType.TABLE,
     "table_create": Proto.Term.TermType.TABLE_CREATE,
     "table_drop": Proto.Term.TermType.TABLE_DROP,
