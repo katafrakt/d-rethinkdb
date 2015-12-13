@@ -42,6 +42,11 @@ debug(featureTest) {
         response.isSuccess().shouldEqual(true);
       });
 
+      f.scenario("brackets with integer", {
+        response = rdb.expr([10, 20, 30, 40, 50])[3].run();
+      	response.integer.shouldEqual(40);
+      });
+
       f.scenario("add", {
         response = rdb.expr(2).add(2).run();
         response.integer.shouldEqual(4);
@@ -117,6 +122,7 @@ debug(featureTest) {
         rdb.db(db).table_create(table).run();
         response = rdb.db(db).table(table).insert(parseJSON(`{"name": "Michelle", "last_name": "Pfeiffer"}`)).run();
         michelle_uuid = response["generated_keys"][0].str();
+        response = rdb.db(db).table(table).insert(parseJSON(`{"name": "Dedee", "last_name": "Pfeiffer"}`)).run();
       });
 
       f.addAfterAll({
@@ -146,6 +152,26 @@ debug(featureTest) {
         response = rdb.db(db).table(table).get(michelle_uuid).run();
         response.length.shouldEqual(1);
         response["last_name"].str.shouldEqual("Pfeiffer");
+      });
+
+      f.scenario("brackets with string", {
+        response = rdb.db(db).table(table).get(michelle_uuid)["last_name"].run();
+      	response.length.shouldEqual(1);
+      	response.str().shouldEqual("Pfeiffer");
+      });
+
+      f.scenario("pluck", {
+        response = rdb.db(db).table(table).pluck("last_name").run();
+        response.length.shouldEqual(2);
+      	response[0].object.length.shouldEqual(1);
+      	response[0]["last_name"].str().shouldEqual("Pfeiffer");
+      });
+
+      f.scenario("pluck with distinct", {
+        response = rdb.db(db).table(table).pluck("last_name").distinct().run();
+        response.length.shouldEqual(1);
+      	response[0].object.length.shouldEqual(1);
+      	response[0]["last_name"].str().shouldEqual("Pfeiffer");
       });
     });
   }
