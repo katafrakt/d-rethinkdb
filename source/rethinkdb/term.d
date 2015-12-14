@@ -25,7 +25,14 @@ class Term {
     "sub": Proto.Term.TermType.SUB,
     "mul": Proto.Term.TermType.MUL,
     "div": Proto.Term.TermType.DIV,
-    "mod": Proto.Term.TermType.MOD
+    "mod": Proto.Term.TermType.MOD,
+    "eq": Proto.Term.TermType.EQ,
+    "ne": Proto.Term.TermType.NE,
+    "gt": Proto.Term.TermType.GT,
+    "lt": Proto.Term.TermType.LT,
+    "ge": Proto.Term.TermType.GE,
+    "le": Proto.Term.TermType.LE,
+    "not": Proto.Term.TermType.NOT
    ];
 
 

@@ -86,6 +86,52 @@ debug(featureTest) {
         response = rdb.expr(5).mod(3).run();
       	response.integer.shouldEqual(2);
       });
+
+      f.scenario("eq", {
+        rdb.expr(23).eq(23).run().boolean.shouldEqual(true);
+        rdb.expr(23).eq(22).run().boolean.shouldEqual(false);
+        rdb.expr(0.5).eq(0.5).run().boolean.shouldEqual(true);
+        rdb.expr([1,2]).eq([1,2]).run().boolean.shouldEqual(true);
+        rdb.expr([1,2]).eq([1,3]).run().boolean.shouldEqual(false);
+      });
+
+      f.scenario("ne", {
+        rdb.expr(23).ne(23).run().boolean.shouldEqual(false);
+        rdb.expr(23).ne(22).run().boolean.shouldEqual(true);
+        rdb.expr(0.5).ne(0.5).run().boolean.shouldEqual(false);
+        rdb.expr([1,2]).ne([1,2]).run().boolean.shouldEqual(false);
+        rdb.expr([1,2]).ne([1,3]).run().boolean.shouldEqual(true);
+      });
+
+      f.scenario("gt", {
+        rdb.expr(23).gt(23).run().boolean.shouldEqual(false);
+        rdb.expr(23).gt(22).run().boolean.shouldEqual(true);
+        rdb.expr(23).gt(24).run().boolean.shouldEqual(false);
+      });
+
+      f.scenario("lt", {
+        rdb.expr(23).lt(23).run().boolean.shouldEqual(false);
+        rdb.expr(23).lt(22).run().boolean.shouldEqual(false);
+        rdb.expr(23).lt(24).run().boolean.shouldEqual(true);
+      });
+
+      f.scenario("ge", {
+        rdb.expr(23).ge(23).run().boolean.shouldEqual(true);
+        rdb.expr(23).ge(22).run().boolean.shouldEqual(true);
+        rdb.expr(23).ge(24).run().boolean.shouldEqual(false);
+      });
+
+      f.scenario("le", {
+        rdb.expr(23).le(23).run().boolean.shouldEqual(true);
+        rdb.expr(23).le(22).run().boolean.shouldEqual(false);
+        rdb.expr(23).le(24).run().boolean.shouldEqual(true);
+      });
+
+      f.scenario("not", {
+        rdb.expr(true).not().run().boolean.shouldEqual(false);
+        rdb.expr(false).not().run().boolean.shouldEqual(true);
+        rdb.not(true).run().boolean.shouldEqual(false);
+      });
     }, "fast");
 
     feature("data manipulation", (f) {
