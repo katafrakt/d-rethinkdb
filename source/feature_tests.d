@@ -86,9 +86,9 @@ debug(featureTest) {
         response = rdb.expr(5).mod(3).run();
       	response.integer.shouldEqual(2);
       });
-    }, "");
+    }, "fast");
 
-    feature("data operation with no data", (f) {
+    feature("data manipulation", (f) {
       f.addBeforeAll({
         rdb.db_create(db).run();
         rdb.db(db).table_create(table).run();
@@ -96,13 +96,6 @@ debug(featureTest) {
 
       f.addAfterAll({
         rdb.db_drop(db).run();
-      });
-
-      f.scenario("filter", {
-        string[string] filter_opts;
-      	filter_opts["name"] = "Michel";
-        response = rdb.db(db).table(table).filter(filter_opts).run();
-      	response.length.shouldEqual(0);
       });
 
       f.scenario("insert with associative array", {
@@ -122,7 +115,7 @@ debug(featureTest) {
       });
     }, "data");
 
-    feature("data manipulation", (f) {
+    feature("data querying", (f) {
       string michelle_uuid;
 
       f.addBeforeAll({
@@ -135,6 +128,13 @@ debug(featureTest) {
 
       f.addAfterAll({
         rdb.db_drop(db).run();
+      });
+
+      f.scenario("filter that should be empty", {
+        string[string] filter_opts;
+      	filter_opts["name"] = "Michel";
+        response = rdb.db(db).table(table).filter(filter_opts).run();
+      	response.length.shouldEqual(0);
       });
 
       f.scenario("filter with associative array", {
@@ -181,6 +181,6 @@ debug(featureTest) {
       	response[0].object.length.shouldEqual(1);
       	response[0]["last_name"].str().shouldEqual("Pfeiffer");
       });
-    });
+    }, "data");
   }
 }
