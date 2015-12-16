@@ -63,7 +63,13 @@ class Response {
 
   @property
   bool boolean() {
-    return this.realValue.type == JSON_TYPE.TRUE ? true : false;
+    if(this.realValue.type == JSON_TYPE.TRUE) {
+      return true;
+    } else if(this.realValue.type == JSON_TYPE.FALSE) {
+      return false;
+    } else {
+      throw new Exception("Not a boolean value: " ~ this.realValue().toString());
+    }
   }
 
   JSONValue objValue() {
