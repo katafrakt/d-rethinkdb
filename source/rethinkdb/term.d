@@ -18,6 +18,7 @@ class Term {
     "table_drop": Proto.Term.TermType.TABLE_DROP,
     "filter": Proto.Term.TermType.FILTER,
     "insert": Proto.Term.TermType.INSERT,
+    "update": Proto.Term.TermType.UPDATE,
     "get": Proto.Term.TermType.GET,
     "pluck": Proto.Term.TermType.PLUCK,
     "distinct": Proto.Term.TermType.DISTINCT,

@@ -171,6 +171,32 @@ debug(featureTest) {
         response.isSuccess().shouldEqual(true);
         response["inserted"].integer.shouldEqual(1);
       });
+
+      f.scenario("update with JSON", {
+        response = rdb.db(db).table(table).insert(parseJSON(`{"name": "John", "last_name": "Snow"}`)).run();
+        string uuid = response["generated_keys"][0].str();
+
+        response = rdb.db(db).table(table).get(uuid).update(parseJSON(`{"last_name": "Silver"}`)).run();
+        response.isSuccess().shouldEqual(true);
+        response["replaced"].integer.shouldEqual(1);
+
+        response = rdb.db(db).table(table).get(uuid).run();
+        response["last_name"].str.shouldEqual("Silver");
+        response["name"].str.shouldEqual("John");
+      });
+
+      f.scenario("update with associative array", {
+        response = rdb.db(db).table(table).insert(parseJSON(`{"name": "John", "last_name": "Snow"}`)).run();
+        string uuid = response["generated_keys"][0].str();
+
+        response = rdb.db(db).table(table).get(uuid).update(["last_name": "Silver"]).run();
+        response.isSuccess().shouldEqual(true);
+        response["replaced"].integer.shouldEqual(1);
+
+        response = rdb.db(db).table(table).get(uuid).run();
+        response["last_name"].str.shouldEqual("Silver");
+        response["name"].str.shouldEqual("John");
+      });
     }, "data");
 
     feature("data querying", (f) {
