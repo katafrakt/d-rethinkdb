@@ -19,6 +19,7 @@ class Term {
     "filter": Proto.Term.TermType.FILTER,
     "insert": Proto.Term.TermType.INSERT,
     "update": Proto.Term.TermType.UPDATE,
+    "del": Proto.Term.TermType.DELETE,
     "get": Proto.Term.TermType.GET,
     "pluck": Proto.Term.TermType.PLUCK,
     "distinct": Proto.Term.TermType.DISTINCT,

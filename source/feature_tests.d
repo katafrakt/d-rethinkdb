@@ -197,6 +197,18 @@ debug(featureTest) {
         response["last_name"].str.shouldEqual("Silver");
         response["name"].str.shouldEqual("John");
       });
+
+      f.scenario("delete", {
+        response = rdb.db(db).table(table).insert(parseJSON(`{"name": "John", "last_name": "Snow"}`)).run();
+        string uuid = response["generated_keys"][0].str();
+
+        response = rdb.db(db).table(table).get(uuid).del().run();
+        response.isSuccess().shouldEqual(true);
+        response["deleted"].integer.shouldEqual(1);
+
+        response = rdb.db(db).table(table).get(uuid).run();
+        response[0].isNull().shouldBeTrue();
+      });
     }, "data");
 
     feature("data querying", (f) {
