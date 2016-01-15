@@ -165,6 +165,72 @@ debug(featureTest) {
         rdb.round(3.8).run().integer.shouldEqual(4);
         rdb.round(-3.2).run().integer.shouldEqual(-3);
       });
+
+      f.scenario("append", {
+        auto array = rdb.expr(JSONValue([1, 2])).append(JSONValue(0)).run().array;
+        array.length.shouldEqual(3);
+        array[0].integer.shouldEqual(1);
+        array[2].integer.shouldEqual(0);
+      });
+
+      f.scenario("prepend", {
+        auto array = rdb.expr(JSONValue([1, 2])).prepend(JSONValue(0)).run().array;
+        array.length.shouldEqual(3);
+        array[0].integer.shouldEqual(0);
+        array[2].integer.shouldEqual(2);
+      });
+
+      f.scenario("prepend with string", {
+        auto array = rdb.expr(JSONValue([1, 2])).prepend(JSONValue("str")).run().array;
+        array.length.shouldEqual(3);
+        array[0].str.shouldEqual("str");
+        array[2].integer.shouldEqual(2);
+      });
+
+      f.scenario("difference", {
+        auto array = rdb.expr(JSONValue([1, 2])).difference(JSONValue([2,3])).run().array;
+        array.length.shouldEqual(1);
+        array[0].integer.shouldEqual(1);
+
+        array = rdb.expr(JSONValue([1, 1, 2, 0])).difference(JSONValue([0, 1, 2])).run().array;
+        array.length.shouldEqual(0);
+      });
+
+      f.scenario("set_insert", {
+        auto array = rdb.expr(JSONValue([1, 1, 2])).set_insert(JSONValue(2)).run().array;
+        array.length.shouldEqual(2);
+        array = rdb.expr(JSONValue(array)).set_insert(JSONValue(3)).run().array;
+        array.length.shouldEqual(3);
+      });
+
+      f.scenario("set_intersection", {
+        auto array = rdb.expr(JSONValue([1, 1, 2])).set_intersection(JSONValue([2, 2])).run().array;
+        array.length.shouldEqual(1);
+        array[0].integer.shouldEqual(2);
+      });
+
+      f.scenario("set_union", {
+        auto array = rdb.expr(JSONValue([1, 1, 2])).set_union(JSONValue([2, 2])).run().array;
+        array.length.shouldEqual(2);
+
+        array = rdb.expr(JSONValue(array)).set_union(JSONValue([1, 2, 3])).run().array;
+        array.length.shouldEqual(3);
+      });
+
+      f.scenario("set_difference", {
+        auto array = rdb.expr(JSONValue([1, 1, 2])).set_difference(JSONValue([2, 2])).run().array;
+        array.length.shouldEqual(1);
+
+        array = rdb.expr(JSONValue([1, 1, 2])).set_difference(JSONValue([1, 2, 3])).run().array;
+        array.length.shouldEqual(0);
+
+        int[] empty_array;
+        array = rdb.expr(JSONValue([1, 1, 2])).set_difference(JSONValue(empty_array)).run().array;
+        array.length.shouldEqual(2);
+
+        array = rdb.expr(JSONValue([1, 1, 2])).set_difference(JSONValue([2, 3])).run().array;
+        array.length.shouldEqual(1);
+      });
     }, "fast");
 
     feature("data manipulation", (f) {

@@ -39,7 +39,18 @@ class Term {
     "not": Proto.Term.TermType.NOT,
     "floor": Proto.Term.TermType.FLOOR,
     "ceil": Proto.Term.TermType.CEIL,
-    "round": Proto.Term.TermType.ROUND
+    "round": Proto.Term.TermType.ROUND,
+
+    // Array methods
+    "prepend": Proto.Term.TermType.PREPEND,
+    "append": Proto.Term.TermType.APPEND,
+    "difference": Proto.Term.TermType.DIFFERENCE,
+
+    // Set operations
+    "set_insert": Proto.Term.TermType.SET_INSERT,
+    "set_intersection": Proto.Term.TermType.SET_INTERSECTION,
+    "set_union": Proto.Term.TermType.SET_UNION,
+    "set_difference": Proto.Term.TermType.SET_DIFFERENCE
    ];
 
 
