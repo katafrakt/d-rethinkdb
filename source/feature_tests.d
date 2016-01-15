@@ -144,6 +144,27 @@ debug(featureTest) {
         rdb.expr(false).not().run().boolean.shouldEqual(true);
         rdb.not(true).run().boolean.shouldEqual(false);
       });
+
+      f.scenario("floor", {
+        rdb.floor(3).run().integer.shouldEqual(3);
+        rdb.floor(3.2).run().integer.shouldEqual(3);
+        rdb.floor(3.8).run().integer.shouldEqual(3);
+        rdb.floor(-3.2).run().integer.shouldEqual(-4);
+      });
+
+      f.scenario("ceil", {
+        rdb.ceil(3).run().integer.shouldEqual(3);
+        rdb.ceil(3.2).run().integer.shouldEqual(4);
+        rdb.ceil(3.8).run().integer.shouldEqual(4);
+        rdb.ceil(-3.2).run().integer.shouldEqual(-3);
+      });
+
+      f.scenario("round", {
+        rdb.round(3).run().integer.shouldEqual(3);
+        rdb.round(3.2).run().integer.shouldEqual(3);
+        rdb.round(3.8).run().integer.shouldEqual(4);
+        rdb.round(-3.2).run().integer.shouldEqual(-3);
+      });
     }, "fast");
 
     feature("data manipulation", (f) {

@@ -36,7 +36,10 @@ class Term {
     "lt": Proto.Term.TermType.LT,
     "ge": Proto.Term.TermType.GE,
     "le": Proto.Term.TermType.LE,
-    "not": Proto.Term.TermType.NOT
+    "not": Proto.Term.TermType.NOT,
+    "floor": Proto.Term.TermType.FLOOR,
+    "ceil": Proto.Term.TermType.CEIL,
+    "round": Proto.Term.TermType.ROUND
    ];
 
 
